@@ -7,7 +7,11 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <stack>
+#include <queue>
+#include <fstream>
+#include <map>
+#include <set>
+#include <stdexcept>
 #include "logic.hpp"
 
 using namespace std;
@@ -395,5 +399,239 @@ vector<string> postorderIterative(Node* root) {
     }
 
     return result;
+}
+
+//task 4
+// ---------- Recursive height ----------
+
+int heightRecursive(Node* root) {
+    // An empty tree has height 0.
+    if (root == nullptr) {
+        return 0;
+    }
+
+    int leftHeight = heightRecursive(root->left);
+    int rightHeight = heightRecursive(root->right);
+
+    // Count the current node as 1.
+    return 1 + max(leftHeight, rightHeight);
+}
+// ---------- Iterative height ----------
+int heightIterative(Node* root) {
+    if (root == nullptr) {
+        return 0;
+    }
+
+    queue<Node*> q;
+    q.push(root);
+
+    int height = 0;
+
+    // Process the tree one level at a time.
+    while (!q.empty()) {
+        int nodesAtLevel = static_cast<int>(q.size());
+
+        // Process every node in the current level.
+        for (int i = 0; i < nodesAtLevel; i++) {
+            Node* current = q.front();
+            q.pop();
+
+            if (current->left != nullptr) {
+                q.push(current->left);
+            }
+
+            if (current->right != nullptr) {
+                q.push(current->right);
+            }
+        }
+        // One complete level has been processed.
+        height++;
+    }
+    return height;
+}
+
+// ==================== TASK 5 ====================
+
+// ---------- Collect distinct atoms ----------
+
+namespace {
+
+bool isTask5Operator(const string& token) {
+    return token == "~" ||
+           token == "+" ||
+           token == "*" ||
+           token == ">";
+}
+
+void collectDistinctAtoms(
+    const Node* root,
+    set<string>& atoms
+) {
+    if (root == nullptr) {
+        return;
+    }
+
+    // Operators are not atoms.
+    // A non-operator token is an atom.
+    if (!isTask5Operator(root->value)) {
+        atoms.insert(root->value);
+    }
+
+    collectDistinctAtoms(root->left, atoms);
+    collectDistinctAtoms(root->right, atoms);
+}
+
+} // anonymous namespace
+
+
+vector<string> getAtoms(const Node* root) {
+    set<string> uniqueAtoms;
+
+    collectDistinctAtoms(root, uniqueAtoms);
+
+    // Return distinct atoms in sorted order.
+    return vector<string>(
+        uniqueAtoms.begin(), uniqueAtoms.end()
+    );
+}
+
+
+// ---------- Evaluate formula ----------
+bool evaluateFormula(
+    const Node* root,
+    const map<string, bool>& values
+) {
+    if (root == nullptr) {
+        throw invalid_argument(
+            "Cannot evaluate an empty parse tree."
+        );
+    }
+
+    const string& token = root->value;
+
+    // Negation: operand is stored in the RIGHT child.
+    if (token == "~") {
+        if (root->left != nullptr || root->right == nullptr) {
+            throw invalid_argument(
+                "Invalid parse tree: invalid operand structure for ~."
+            );
+        }
+
+        return !evaluateFormula(root->right, values);
+    }
+
+    // Binary operators.
+    if (token == "+" || token == "*" || token == ">") {
+        if (root->left == nullptr || root->right == nullptr) {
+            throw invalid_argument(
+                "Invalid parse tree: missing operand."
+            );
+        }
+
+        bool leftValue = evaluateFormula(root->left, values);
+        bool rightValue = evaluateFormula(root->right, values);
+
+        if (token == "+") {
+            return leftValue || rightValue;
+        }
+
+        if (token == "*") {
+            return leftValue && rightValue;
+        }
+
+        // Implication: P > Q means !P || Q.
+        return !leftValue || rightValue;
+    }
+
+    // Operand: return its assigned truth value.
+    auto it = values.find(token);
+
+    if (it == values.end()) {
+        throw invalid_argument(
+            "Truth value not provided for atom: " + token
+        );
+    }
+
+    return it->second;
+}
+
+// ---------- Generate complete truth table ----------
+
+void writeTruthTable(
+    const Node* root,
+    const string& filename
+) {
+    if (root == nullptr) {
+        throw invalid_argument(
+            "Cannot create a truth table for an empty tree."
+        );
+    }
+
+    vector<string> atoms = getAtoms(root);
+
+    if (atoms.empty()) {
+        throw invalid_argument(
+            "No atoms found in the parse tree."
+        );
+    }
+
+    // Truth-table generation is limited to 10 distinct atoms.
+    if (atoms.size() > 10) {
+        throw length_error(
+            "Truth table cannot be generated for more than "
+            "10 distinct atoms."
+        );
+    }
+
+    ofstream out(filename);
+
+    if (!out) {
+        throw runtime_error(
+            "Could not create output file: " + filename
+        );
+    }
+
+    out << "Truth Table (T = True, F = False)\n\n";
+
+    // Print column headings.
+    for (const string& atom : atoms) {
+        out << atom << '\t';
+    }
+
+    out << "Formula\n";
+
+    // Number of possible assignments = 2^n.
+    const unsigned int numberOfRows =
+        1U << atoms.size();
+
+    for (unsigned int row = 0;
+         row < numberOfRows;
+         row++) {
+
+        map<string, bool> assignment;
+
+        // Generate one assignment for every atom.
+        for (size_t i = 0; i < atoms.size(); i++) {
+            // The first atom changes slowest;
+            // the last atom changes fastest.
+            bool value =
+                ((row >> (atoms.size() - 1 - i)) & 1U) == 0;
+
+            assignment[atoms[i]] = value;
+
+            out << (value ? 'T' : 'F') << '\t';
+        }
+
+        // Evaluate the formula for this assignment.
+        bool formulaValue = evaluateFormula(root, assignment);
+
+        out << (formulaValue ? 'T' : 'F') << '\n';
+    }
+
+    if (!out) {
+        throw runtime_error(
+            "Error occurred while writing the truth table."
+        );
+    }
 }
 

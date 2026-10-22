@@ -9,6 +9,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <queue>
+#include <map>
 
 using namespace std;
 
@@ -16,7 +18,8 @@ struct Node {
     string value;
     Node* left;
     Node* right;
-
+    // For ~, the operand is stored in the right child.
+    // The left child is nullptr for unary negation.
     explicit Node(const string& v)
         : value(v), left(nullptr), right(nullptr) {}
 };
@@ -47,3 +50,20 @@ vector<string> preorderIterative(Node* root);
 
 vector<string> postorderRecursive(Node* root);
 vector<string> postorderIterative(Node* root);
+
+// Task 4: Tree height
+int heightRecursive(Node* root);
+int heightIterative(Node* root);
+
+// Task 5: Formula evaluation and truth table
+vector<string> getAtoms(const Node* root);
+
+bool evaluateFormula(
+    const Node* root,
+    const map<string, bool>& values
+);
+
+void writeTruthTable(
+    const Node* root,
+    const string& filename
+);
