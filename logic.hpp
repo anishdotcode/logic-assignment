@@ -36,5 +36,14 @@ string infixToPrefix(const string& expression);
 // Read a DIMACS CNF file and convert it into an infix expression.
 string dimacsToInfix(const string& filename);
 
-Node* prefixToTree(const std::string& prefix);
+Node* prefixToTree(const string& prefix);
 void deleteTree(Node* root);
+
+vector<string> inorderRecursive(Node* root);
+vector<string> inorderIterative(Node* root);
+
+vector<string> preorderRecursive(Node* root);
+vector<string> preorderIterative(Node* root);
+
+vector<string> postorderRecursive(Node* root);
+vector<string> postorderIterative(Node* root);

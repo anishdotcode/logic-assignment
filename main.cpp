@@ -11,6 +11,18 @@
 
 using namespace std;
 
+void printTraversal(
+    const string& label,
+    const vector<string>& result
+) {
+    cout << label << ": ";
+
+    for (const string& token : result) {
+        cout << token << ' ';
+    }
+    cout << '\n';
+}
+
 int main() {
     cout << "=== Propositional Logic Program ===\n";
     cout << "1. Input from CNF file\n";
@@ -44,7 +56,15 @@ int main() {
 
                 cout << "Parse tree constructed successfully.\n";
                 cout << "Root node: " << root->value << '\n';
+                // Task 3: Perform all six traversals.
+                printTraversal("Inorder (recursive)",inorderRecursive(root));
+                printTraversal("Inorder (iterative)",inorderIterative(root));
+                printTraversal("Preorder (recursive)",preorderRecursive(root));
+                printTraversal("Preorder (iterative)",preorderIterative(root));
+                printTraversal("Postorder (recursive)",postorderRecursive(root));
+                printTraversal("Postorder (iterative)",postorderIterative(root));
 
+                // Free the tree only after all traversals are complete.
                 deleteTree(root);
             }
             catch (const exception& e) {
@@ -72,7 +92,15 @@ int main() {
 
                     cout << "Parse tree constructed successfully.\n";
                     cout << "Root node: " << root->value << '\n';
+                    // Task 3: Perform all six traversals.
+                    printTraversal("Inorder (recursive)",inorderRecursive(root));
+                    printTraversal("Inorder (iterative)",inorderIterative(root));
+                    printTraversal("Preorder (recursive)",preorderRecursive(root));
+                    printTraversal("Preorder (iterative)",preorderIterative(root));
+                    printTraversal("Postorder (recursive)",postorderRecursive(root));
+                    printTraversal("Postorder (iterative)",postorderIterative(root));
 
+                    // Free the tree only after all traversals are complete.
                     deleteTree(root);
                 }
                 catch (const exception& e) {

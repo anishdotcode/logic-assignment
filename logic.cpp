@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <stack>
 #include "logic.hpp"
 
 using namespace std;
@@ -188,7 +189,7 @@ Node* prefixToTree(const string& prefix) {
                 Node* child = st.back();
                 st.pop_back();
                 Node* node = new Node(token);
-                node->left = child;
+                node->right = child;
 
                 st.push_back(node);
             }
@@ -245,4 +246,154 @@ void deleteTree(Node* root) {
     deleteTree(root->left);
     deleteTree(root->right);
     delete root;
-}   
+}
+//task 3
+namespace {
+
+void inorderRec(const Node* root, vector<string>& result) {
+    if (root == nullptr) {
+        return;
+    }
+
+    inorderRec(root->left, result);
+    result.push_back(root->value);
+    inorderRec(root->right, result);
+}
+
+void preorderRec(const Node* root, vector<string>& result) {
+    if (root == nullptr) {
+        return;
+    }
+
+    result.push_back(root->value);
+    preorderRec(root->left, result);
+    preorderRec(root->right, result);
+}
+
+void postorderRec(const Node* root, vector<string>& result) {
+    if (root == nullptr) {
+        return;
+    }
+
+    postorderRec(root->left, result);
+    postorderRec(root->right, result);
+    result.push_back(root->value);
+}
+
+} // anonymous namespace
+
+
+vector<string> inorderRecursive(Node* root) {
+    vector<string> result;
+    inorderRec(root, result);
+    return result;
+}
+
+vector<string> preorderRecursive(Node* root) {
+    vector<string> result;
+    preorderRec(root, result);
+    return result;
+}
+
+vector<string> postorderRecursive(Node* root) {
+    vector<string> result;
+    postorderRec(root, result);
+    return result;
+}
+
+
+// ---------- Iterative traversals ----------
+
+vector<string> inorderIterative(Node* root) {
+    vector<string> result;
+    stack<Node*> st;
+    Node* current = root;
+
+    while (current != nullptr || !st.empty()) {
+        // Go as far left as possible.
+        while (current != nullptr) {
+            st.push(current);
+            current = current->left;
+        }
+
+        // Visit the top node.
+        current = st.top();
+        st.pop();
+
+        result.push_back(current->value);
+
+        // Process its right subtree.
+        current = current->right;
+    }
+
+    return result;
+}
+
+
+vector<string> preorderIterative(Node* root) {
+    vector<string> result;
+
+    if (root == nullptr) {
+        return result;
+    }
+
+    stack<Node*> st;
+    st.push(root);
+
+    while (!st.empty()) {
+        Node* current = st.top();
+        st.pop();
+
+        result.push_back(current->value);
+
+        // Push right first so that left is processed first.
+        if (current->right != nullptr) {
+            st.push(current->right);
+        }
+
+        if (current->left != nullptr) {
+            st.push(current->left);
+        }
+    }
+
+    return result;
+}
+
+
+vector<string> postorderIterative(Node* root) {
+
+    vector<string> result;
+
+    if (root == nullptr) {
+        return result;
+    }
+
+    stack<Node*> first;
+    stack<Node*> second;
+
+    first.push(root);
+
+    while (!first.empty()) {
+        Node* current = first.top();
+        first.pop();
+
+        second.push(current);
+
+        if (current->left != nullptr) {
+            first.push(current->left);
+        }
+
+        if (current->right != nullptr) {
+            first.push(current->right);
+        }
+    }
+
+    // Reversing the processing order gives left-right-root.
+    while (!second.empty()) {
+        result.push_back(second.top()->value);
+        second.pop();
+    }
+
+    return result;
+}
+
