@@ -1,3 +1,11 @@
+/**
+ * @file main.cpp
+ * @brief Interactive entry point for the propositional logic program.
+ *
+ * Provides a menu for entering an infix formula or reading a CNF file,
+ * then invokes the conversion, parse-tree, traversal, height,
+ * evaluation, and truth-table functions.
+ */
 #include <algorithm>
 #include <cctype>
 #include <iostream>
@@ -13,6 +21,11 @@
 
 using namespace std;
 
+/**
+ * @brief Prints the result of a tree traversal.
+ * @param label Name of the traversal being displayed.
+ * @param result Sequence of visited node values.
+ */
 void printTraversal(
     const string& label,
     const vector<string>& result
@@ -25,6 +38,13 @@ void printTraversal(
     cout << '\n';
 }
 
+/**
+ * @brief Reads a Boolean truth value from the user.
+ * @param atom Name of the propositional atom being assigned.
+ * @return True or false based on the user's input.
+ *
+ * Accepts T/F and 1/0 representations.
+ */
 bool readTruthValue(const string& atom) {
     string input;
 
@@ -54,6 +74,13 @@ bool readTruthValue(const string& atom) {
     }
 }
 
+/**
+ * @brief Runs the interactive propositional logic program.
+ * @return Zero when the program terminates normally.
+ *
+ * Handles user input, selects the input source, invokes the
+ * implemented tasks, and reports results or errors.
+ */
 int main() {
     cout << "=== Propositional Logic Program ===\n";
     cout << "1. Input from CNF file\n";

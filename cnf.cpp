@@ -1,5 +1,12 @@
+/**
+ * @file cnf.cpp
+ * @brief Implements parsing of DIMACS CNF input files.
+ *
+ * Reads the CNF header and clauses, converts literals into
+ * propositional atoms or their negations, and combines the
+ * clauses into a fully parenthesized infix formula.
+ */
 #include "logic.hpp"
-
 #include <fstream>
 #include <limits>
 #include <sstream>

@@ -1,3 +1,10 @@
+/**
+ * @file logic.cpp
+ * @brief Implements expression conversion and parse-tree algorithms.
+ *
+ * Contains the implementations for prefix conversion, tree
+ * construction, traversal, height calculation, and formula evaluation.
+ */
 #include <algorithm>
 #include <cctype>
 #include <sstream>
@@ -17,12 +24,22 @@
 using namespace std;
 
 // Check whether a token is a logical operator.
+/**
+ * @brief Checks whether a token represents a logical operator.
+ * @param token Token to check.
+ * @return True if the token is a supported logical operator.
+ */
 bool isOperator(const string& token) {
     return token == "~" || token == "+" ||
            token == "*" || token == ">";
 }
 
 // Return the precedence of an operator.
+/**
+ * @brief Returns the precedence assigned to a logical operator.
+ * @param op Logical operator.
+ * @return Integer precedence value used during expression conversion.
+ */
 int precedence(const string& op) {
     if (op == "~") return 4;
     if (op == "*") return 3;
@@ -32,6 +49,11 @@ int precedence(const string& op) {
 }
 
 // Split an infix expression into tokens.
+/**
+ * @brief Splits an expression into individual tokens.
+ * @param expression Expression to tokenize.
+ * @return Vector containing the tokens in their original order.
+ */
 vector<string> tokenize(const string& expression) {
     vector<string> tokens;
     size_t i = 0;
@@ -152,6 +174,11 @@ string infixToPrefix(const string& expression) {
 }
 //task 2
 namespace {
+    /**
+ * @brief Checks whether a token is a valid propositional atom name.
+ * @param token Token being checked.
+ * @return True if the token satisfies the atom-naming rules.
+ */
     bool isValidAtomToken(const string& token) {
         if (token.empty()) {
             return false;
@@ -254,6 +281,11 @@ void deleteTree(Node* root) {
 //task 3
 namespace {
 
+/**
+ * @brief Recursive helper for inorder traversal.
+ * @param root Current subtree root.
+ * @param result Vector in which visited node values are stored.
+ */
 void inorderRec(const Node* root, vector<string>& result) {
     if (root == nullptr) {
         return;
@@ -264,6 +296,11 @@ void inorderRec(const Node* root, vector<string>& result) {
     inorderRec(root->right, result);
 }
 
+/**
+ * @brief Recursive helper for preorder traversal.
+ * @param root Current subtree root.
+ * @param result Vector in which visited node values are stored.
+ */
 void preorderRec(const Node* root, vector<string>& result) {
     if (root == nullptr) {
         return;
@@ -274,6 +311,11 @@ void preorderRec(const Node* root, vector<string>& result) {
     preorderRec(root->right, result);
 }
 
+/**
+ * @brief Recursive helper for postorder traversal.
+ * @param root Current subtree root.
+ * @param result Vector in which visited node values are stored.
+ */
 void postorderRec(const Node* root, vector<string>& result) {
     if (root == nullptr) {
         return;
@@ -456,6 +498,11 @@ int heightIterative(Node* root) {
 
 namespace {
 
+/**
+ * @brief Identifies operators when collecting propositional atoms.
+ * @param token Node value to check.
+ * @return True if the value is a logical operator.
+ */
 bool isTask5Operator(const string& token) {
     return token == "~" ||
            token == "+" ||
@@ -463,6 +510,11 @@ bool isTask5Operator(const string& token) {
            token == ">";
 }
 
+/**
+ * @brief Traverses a subtree and collects its distinct atoms.
+ * @param root Current subtree root.
+ * @param atoms Set that stores unique atom names.
+ */
 void collectDistinctAtoms(
     const Node* root,
     set<string>& atoms
