@@ -26,17 +26,20 @@ using namespace std;
  * @struct Node
  * @brief Represents a node in a propositional logic parse tree.
  *
- * Each node stores either a logical operator or a propositional atom.
- * Binary operators use both children. For negation (~), the operand
- * is stored in the right child and the left child remains nullptr.
+ * Operators and propositional atoms are stored in value.
+ * Binary operators use both children. For negation (~),
+ * the operand is stored in the right child.
  */
 struct Node {
-    string value;
-    Node* left;
-    Node* right;
-    // For ~, the operand is stored in the right child.
-    // The left child is nullptr for unary negation.
-    explicit Node(const string& v)
+    std::string value; ///< Operator or propositional atom.
+    Node* left;        ///< Left child; nullptr for negation nodes.
+    Node* right;       ///< Right child; operand of negation is stored here.
+
+    /**
+     * @brief Constructs a node with the given value.
+     * @param v Operator or propositional atom to store.
+     */
+    explicit Node(const std::string& v)
         : value(v), left(nullptr), right(nullptr) {}
 };
 
